@@ -4,7 +4,6 @@ from ostos import Ostos
 
 class Ostoskori:
     def __init__(self):
-        self.tavaroita = 0
         self._ostoslista = []
         # ostoskori tallettaa Ostos-oliota, yhden per korissa oleva Tuote
 
