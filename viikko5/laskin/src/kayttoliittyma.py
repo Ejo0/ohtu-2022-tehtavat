@@ -12,42 +12,62 @@ class Summa:
     def __init__(self, sovellus, syote):
         self.sovellus = sovellus
         self.syote = syote
+        self.edellinen = None
     
     def suorita(self):
+        self.edellinen = self.sovellus.tulos
         self.sovellus.plus(self.syote())
+
+    def kumoa(self):
+        self.sovellus.aseta_arvo(self.edellinen)
 
 class Erotus:
     def __init__(self, sovellus, syote):
         self.sovellus = sovellus
         self.syote = syote
+        self.edellinen = None
     
     def suorita(self):
+        self.edellinen = self.sovellus.tulos
         self.sovellus.miinus(self.syote())
+
+    def kumoa(self):
+        self.sovellus.aseta_arvo(self.edellinen)
 
 class Nollaus:
     def __init__(self, sovellus):
         self.sovellus = sovellus
-    
+        self.edellinen = self.sovellus.tulos
+
     def suorita(self):
+        self.edellinen = self.sovellus.tulos
         self.sovellus.nollaa()
 
+    def kumoa(self):
+        self.sovellus.aseta_arvo(self.edellinen)
+
 class Kumoa:
-    def __init__(self, sovellus):
-        pass
+    def __init__(self, sovellus, edellinen_komento):
+        self.sovellus = sovellus
+        self.edellinen = edellinen_komento
     
     def suorita(self):
+        self.edellinen().kumoa()
+    
+    def kumoa(self):
         pass
 
 class Kayttoliittyma:
     def __init__(self, sovellus, root):
         self._sovellus = sovellus
         self._root = root
+        self._edellinen = None
 
         self._komennot = {
             Komento.SUMMA: Summa(sovellus, self._lue_syote),
             Komento.EROTUS: Erotus(sovellus, self._lue_syote),
             Komento.NOLLAUS: Nollaus(sovellus),
-            Komento.KUMOA: Kumoa(sovellus)
+            Komento.KUMOA: Kumoa(sovellus, self._edellinen_komento)
         }
 
     def kaynnista(self):
@@ -97,8 +117,12 @@ class Kayttoliittyma:
             arvo = 0
         return arvo
 
+    def _edellinen_komento(self):
+        return self._edellinen
+
     def _suorita_komento(self, komento):
         self._komennot[komento].suorita()
+        self._edellinen = self._komennot[komento]
 
         self._kumoa_painike["state"] = constants.NORMAL
 
